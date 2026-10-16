@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "decision-kit"
+version = "0.1.0"
+description = "Decision workflows powered by Microsoft Decision-1"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.scripts]
+decision-kit = "decision_kit.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["decision_kit*"]
+namespaces = false
+
+[tool.setuptools.package-data]
+decision_kit = ["resources/**/*", "resources/**/.*/*"]
+
+[tool.setuptools.exclude-package-data]
+"*" = ["**/__pycache__/*", "**/*.pyc", "resources/**/__pycache__/*"]

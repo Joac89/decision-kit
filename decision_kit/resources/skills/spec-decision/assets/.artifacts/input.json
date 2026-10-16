@@ -1,0 +1,14 @@
+{
+  "state": "Contexto y evidencia autosuficientes del caso, a completar por analysis.",
+  "questions": {
+    "alternativa": {
+      "type": "choice",
+      "instructions": "Selecciona la alternativa mejor respaldada por el contexto y las restricciones.",
+      "criteria": {
+        "a": "Descripción concreta de la alternativa A.",
+        "b": "Descripción concreta de la alternativa B.",
+        "insuficiente": "La información disponible no permite elegir."
+      }
+    }
+  }
+}

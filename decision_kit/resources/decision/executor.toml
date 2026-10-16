@@ -1,0 +1,8 @@
+# Configuración del cliente System One; no es un perfil de modelo de Codex.
+endpoint = "https://example.invalid/providers/microsoft/v1/systemone"
+deployment = "Decision-1"
+auth = "api_key" # api_key o bearer_token
+credential_env = "DECISION_API_KEY"
+timeout_seconds = 60
+max_response_bytes = 5000000
+verify_tls = true # false omite temporalmente validación de certificado y nombre del servidor

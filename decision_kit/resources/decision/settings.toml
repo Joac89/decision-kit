@@ -1,0 +1,13 @@
+# Configuración del método; no es configuración nativa de Codex.
+output_directory = "decision"
+language = "es"
+workflow_mode = "continuous" # continuous o step_by_step
+external_research = false
+
+[research]
+mode = "auto" # auto, required o skip; puede ajustarse por caso
+
+[execution]
+mode = "systemone"
+config = "decision/executor.toml"
+ready = false # instalar la conexión local y definir la credencial antes de habilitar
