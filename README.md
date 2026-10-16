@@ -42,7 +42,7 @@ decision-kit configure --home "$HOME/.codex-decision" --endpoint "https://YOUR-R
 
 Define `DECISION_API_KEY` en el entorno que ejecuta el kit. No pases la clave como
 argumento ni la guardes en el repositorio. Se admite una credencial persistente
-de usuario en Windows. TLS se verifica por defecto.
+de usuario en Windows.
 
 La configuración explícita permite usar el núcleo sin perfil ni variables de Codex:
 
@@ -54,6 +54,50 @@ La carpeta del caso debe existir. El diagnóstico no envía claves ni decisiones
 Un HTTP 401 indica conectividad, no autenticación válida. Ejecútalo también dentro
 de Codex para comprobar sus permisos efectivos: que funcione en PowerShell no
 garantiza acceso desde el sandbox.
+
+## Red de Codex: configuración optativa
+
+Que el diagnóstico funcione desde PowerShell no garantiza que el sandbox de Codex
+tenga red. Configura los permisos del entorno desde el que ejecutarás las decisiones.
+
+Para habilitar red explícitamente en el home que utilizas:
+
+```powershell
+python -m decision_kit configure-codex-network --home "$HOME/.codex"
+```
+
+El comando respalda y modifica solo `config.toml` del home indicado. No crea un perfil
+ni cambia otros homes. El permiso extiende `:workspace`: conserva las restricciones
+de archivos y habilita conexiones salientes para los comandos de ese entorno, no solo
+para el endpoint de Decision-1. Para limitar el cambio a un perfil existente, añade
+`--profile NOMBRE`. Los permisos personalizados se conservan: si no pueden combinarse
+con seguridad, el comando se detiene y solicita revisión manual.
+
+Después cierra la sesión activa y abre una nueva. Reanudar una sesión antigua no
+garantiza recargar sus permisos. Comprueba el entorno de ejecución con:
+
+```powershell
+python -m decision_kit diagnose-codex --home "$HOME/.codex" --case .
+```
+
+Si usas perfil, añade el mismo `--profile NOMBRE` al diagnóstico y al iniciar Codex.
+Si usas un home aislado, reemplaza `.codex` en ambos comandos por ese home.
+La prueba ejecuta el diagnóstico instalado en un sandbox nuevo con sus permisos activos
+e incluye las políticas administradas. No usa claves ni envía decisiones; solo escribe
+logs. HTTP 401 prueba conectividad, no autenticación. El home y la carpeta deben existir.
+
+Requiere Codex con permisos nombrados y `sandbox --include-managed-config` (verificado
+con CLI 0.160.0 en Windows). El ejecutable nativo se descubre desde PATH o desde la
+instalación npm estándar en Windows; si no se encuentra, indica `--codex /ruta/codex.exe`.
+No acepta lanzadores .bat/.cmd como ejecutable explícito.
+
+Una política administrada puede impedir el acceso aun con la configuración local.
+En ese caso el diagnóstico falla y se requiere autorización del administrador; el kit
+no reemplaza las políticas administradas. Estos comandos no se ejecutan
+automáticamente durante install, update o configure. Las sesiones pueden tener ajustes
+adicionales: una sonda nueva no cambia los permisos de una sesión que ya estaba abierta.
+
+Referencia: [Permisos y seguridad de Codex](https://learn.chatgpt.com/docs/agent-approvals-security).
 
 ## Uso con Codex
 

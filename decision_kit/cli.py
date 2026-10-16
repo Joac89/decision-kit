@@ -6,6 +6,7 @@ import sys
 import tomllib
 from urllib.parse import urlsplit
 from .installer import RESOURCES, install
+from .codex_network import enable_network, diagnose_codex
 
 
 def configure(home, endpoint, deployment, credential_env):
@@ -65,6 +66,14 @@ def main():
     sub.add_argument('--endpoint', required=True)
     sub.add_argument('--deployment', required=True)
     sub.add_argument('--credential-env', default='DECISION_API_KEY')
+    sub = commands.add_parser('configure-codex-network', help='Habilita explícitamente red para comandos de Codex, conservando restricciones de archivos.')
+    sub.add_argument('--home', required=True)
+    sub.add_argument('--profile', help='Perfil existente; sin esta opción modifica solo la configuración base del home indicado.')
+    sub = commands.add_parser('diagnose-codex', help='Comprueba conectividad dentro de un sandbox nuevo, sin claves ni decisiones.')
+    sub.add_argument('--home', required=True)
+    sub.add_argument('--case', required=True)
+    sub.add_argument('--profile')
+    sub.add_argument('--codex', help='Ruta al ejecutable nativo de Codex si no se descubre automáticamente.')
     for command in ('execute', 'verify', 'prepare', 'diagnose'):
         commands.add_parser(command, add_help=False)
     args, remainder = parser.parse_known_args()
@@ -77,6 +86,13 @@ def main():
             if remainder:
                 parser.error('Argumentos desconocidos')
             result = configure(args.home, args.endpoint, args.deployment, args.credential_env)
+        elif args.command in ('configure-codex-network', 'diagnose-codex'):
+            if remainder:
+                parser.error('Argumentos desconocidos: ' + ' '.join(remainder))
+            result = enable_network(args.home, args.profile) if args.command == 'configure-codex-network' else diagnose_codex(args.home, args.case, args.profile, args.codex)
+            if args.command == 'diagnose-codex' and not result.get('reachable'):
+                print(json.dumps(result, ensure_ascii=False))
+                raise SystemExit(1)
         else:
             scripts = RESOURCES / 'decision/scripts'
             sys.path.insert(0, str(scripts))
